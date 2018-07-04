@@ -34,7 +34,7 @@ class MatchesController extends AppController
      */
     public function view($id = null)
     {
-        $match = $this->Matches->get($id);
+        $match = $this->Matches->get($id, ['contain' => ['Team1', 'Team2']]);
         $this->set('match', $match);
         $this->set('_serialize', true);
     }
