@@ -20,11 +20,10 @@ class PlayersController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Roles', 'Teams']
-        ];
-        $players = $this->paginate($this->Players);
-
+        $players = $this->Players->find('all');
+        $filter = $this->request->getQuery('filter');
+        if($filter['team_id']!=null)
+            $players = $players->where(['team_id' => $filter['team_id']]);
         $this->set(compact('players'));
         $this->set('_serialize', true);
     }

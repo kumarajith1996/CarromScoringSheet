@@ -23,6 +23,7 @@ class TeamsController extends AppController
         $teams = $this->paginate($this->Teams);
 
         $this->set(compact('teams'));
+        $this->set('_serialize', true);
     }
 
     /**

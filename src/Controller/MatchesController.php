@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
 /**
  * Matches Controller
  *
@@ -20,14 +20,10 @@ class MatchesController extends AppController
      */
      public function index()
     {
-        $matches = $this->Matches->getOrGenerateMatches();
+        $filter = $this->request->getQuery('filter');
+        $matches = $this->Matches->getOrGenerateMatches($filter['group'] ?? null, $filter['role'] ?? null);
         $this->set('matches', $matches);
         $this->set('_serialize', true);
-        $this->response->header('Access-Control-Allow-Origin','*');
-        $this->response->header('Access-Control-Allow-Methods','*');
-        $this->response->header('Access-Control-Allow-Headers','X-Requested-With');
-        $this->response->header('Access-Control-Allow-Headers','Content-Type, x-xsrf-token');
-        $this->response->header('Access-Control-Max-Age','172800');
     }
 
     /**
@@ -37,16 +33,11 @@ class MatchesController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($role = null)
+    public function view($id = null)
     {
-        $group = $this->Matches->find()->contain(['Team1', 'Team2'])->where(['team1._group' => $role]) -> select(['id','team1_name' => 'team1.name','team2_name' => 'team2.name']);
-        $this->set('group', $group);
+        $match = $this->Matches->get($id, ['contain' => ['Team1', 'Team2']]);
+        $this->set('match', $match);
         $this->set('_serialize', true);
-        $this->response->header('Access-Control-Allow-Origin','*');
-        $this->response->header('Access-Control-Allow-Methods','*');
-        $this->response->header('Access-Control-Allow-Headers','X-Requested-With');
-        $this->response->header('Access-Control-Allow-Headers','Content-Type, x-xsrf-token');
-        $this->response->header('Access-Control-Max-Age','172800');
     }
 
     /**
@@ -113,5 +104,27 @@ class MatchesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function beforeRender(event $event) {
+        $this->setCorsHeaders();
+    }
+
+    public function beforeFilter(event $event) {
+    if ($this->request->is('options')) {
+        $this->setCorsHeaders();
+        return $this->response;
+        }
+    }
+
+    private function setCorsHeaders() {
+        $this->response->cors($this->request)
+            ->allowOrigin(['*'])
+            ->allowMethods(['*'])
+            ->allowHeaders(['*'])
+            ->allowCredentials(['true'])
+            ->exposeHeaders(['Link'])
+            ->maxAge(300)
+            ->build();
     }
 }

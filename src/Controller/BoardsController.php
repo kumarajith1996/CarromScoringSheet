@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
 /**
  * Boards Controller
  *
@@ -26,6 +26,7 @@ class BoardsController extends AppController
         $boards = $this->paginate($this->Boards);
 
         $this->set(compact('boards'));
+        $this->set('_serialize', true);
     }
 
     /**
@@ -51,20 +52,14 @@ class BoardsController extends AppController
      */
     public function add()
     {
+        $board = $this->Boards->newEntity();
         if ($this->request->is('post')) {
-            $board = $this->Boards->newEntity();
-            $board = $this->Boards->patchEntity($board, $this->request->getData(), ['associated' => ['Players._joinData'],'validation' => false]);
-            $this->Boards->save($board); 
+            $board = $this->Boards->patchEntity($board, $this->request->getData('board'), ['validation' => false]);
+            $this->Boards->save($board);
         }
-        $matches = $this->Boards->Matches->find('list', ['limit' => 200]);
-        $players = $this->Boards->Players->find('list', ['limit' => 200]);
-        $this->set(compact('board', 'matches', 'players'));
+        $matches = ($this->Boards->Matches->find()->where(['id' => $board->match_id])->select(['id', 'team1_id', 'team2_id'])->toArray())[0];
+        $this->set(compact('board', 'matches'));
         $this->set('_serialize', true);
-        $this->response->header('Access-Control-Allow-Origin','*');
-        $this->response->header('Access-Control-Allow-Methods','*');
-        $this->response->header('Access-Control-Allow-Headers','X-Requested-With');
-        $this->response->header('Access-Control-Allow-Headers','Content-Type, x-xsrf-token');
-        $this->response->header('Access-Control-Max-Age','172800');
     }
 
     /**
@@ -111,5 +106,27 @@ class BoardsController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function beforeRender(event $event) {
+        $this->setCorsHeaders();
+    }
+
+    public function beforeFilter(event $event) {
+    if ($this->request->is('options')) {
+        $this->setCorsHeaders();
+        return $this->response;
+        }
+    }
+
+    private function setCorsHeaders() {
+        $this->response->cors($this->request)
+            ->allowOrigin(['*'])
+            ->allowMethods(['*'])
+            ->allowHeaders(['*'])
+            ->allowCredentials(['true'])
+            ->exposeHeaders(['Link'])
+            ->maxAge(300)
+            ->build();
     }
 }

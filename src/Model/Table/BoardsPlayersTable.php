@@ -92,4 +92,18 @@ class BoardsPlayersTable extends Table
 
         return $rules;
     }
+
+    public function computePoints($boardId, $teamId, $opponentId)
+    {
+        $points = [];
+        $points[''.$teamId] = 0;
+        $points[''.$opponentId] = 0;
+        $boards_players = $this->find()->where(['board_id' => $boardId]);
+        foreach ($boards_players as $boards_player) {
+            $points[''.$boards_player->team_id] += $boards_player->coins;
+            $points[''.$boards_player->opponent_id] += $boards_player->opc;
+            $points[''.$boards_player->team_id] -= $boards_player->minus;
+        }
+        return $points;
+    }
 }

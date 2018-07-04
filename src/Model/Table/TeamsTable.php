@@ -112,4 +112,15 @@ class TeamsTable extends Table
             $this->Players->changePlayerTeam($values['ids'][$i], $team_id);
         }
     }
+
+    public function updateTeamPoints($points, $team1Id, $team2Id)
+    {
+        $team = $this->get($team1Id);
+        $team['points'] = $team['points'] +  $points[''.$team1Id];
+        $this->save($team);
+        
+        $team = $this->get($team2Id);
+        $team['points'] = $team['points'] + $points[''.$team2Id];
+        $this->save($team);
+    }
 }

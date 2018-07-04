@@ -96,21 +96,52 @@ class MatchesTable extends Table
 
         return $rules;
     }
-    public function getOrGenerateMatches()
+    public function getOrGenerateMatches($group, $role)
     {
         $count = $this->find()->count();
         if($count == 0)
         {
             $this->generatePlayOffs();
         }
-        $results = $this->getAllMatches();
+        $results = $this->getAllMatches($group, $role);
         return $results;
     }
 
-    public function getAllMatches()
+    public function getAllMatches($group, $role)
     {
-        $matches = $this->find()->contain(['Team1', 'Team2'])->select(['id','team1_name' => 'team1.name','team2_name' => 'team2.name', 'role']);
+        //$this->computePoints(); 
+        //$this->generateSemiFinals();   
+        $matches = $this->find()->contain(['Team1', 'Team2'])->select(['id','team1_name' => 'team1.name','team2_name' => 'team2.name', 'group' => 'team1._group']);
+        if($group!=null)
+            $matches = $matches -> where(['team1._group' => $group]);
+        if($role!=null)
+            $matches = $matches-> where(['role' => $role]);
         return $matches;
+    }
+
+    public function computePoints()
+    {
+        $matches = $this->find()->all();
+        $points = null;
+        $patchMatch;
+        foreach ($matches as $match) {
+            $points = $this->Boards->computePoints($match['id']);
+            $patchMatch = $this->get($match['id']);
+            if($points[''.$match['team1_id']] > $points[''.$match['team2_id']])
+            {
+                $patchMatch->winner = $match['team1_id'];
+            }
+            else if($points[''.$match['team1_id']] < $points[''.$match['team2_id']])
+            {
+                $patchMatch->winner = $match['team2_id'];
+            }
+            else
+            {
+                $patchMatch->winner = null;
+            }
+            $this->save($patchMatch);
+            $this->Teams->updateTeamPoints($points, $match['team1_id'], $match['team2_id']);
+        }
     }
 
     public function generatePlayOffs()
@@ -132,5 +163,18 @@ class MatchesTable extends Table
         }
         $entries = $this->newEntities($matches);
         $result = $this->saveMany($entries);
+    }
+
+    public function generateSemiFinals()
+    {
+        $group1 = $this->Teams->find()->select('id')->where(['_group =' => 1])->order(['points' => 'DESC'])->limit(2)->toArray();
+        $group2 = $this->Teams->find()->select('id')->where(['_group =' => 2])->order(['points' => 'DESC'])->limit(2)->toArray();
+
+        $matches = [];
+        array_push($matches, ['team1_id' => $group1[0]->id, 'team2_id' => $group2[1]->id, 'role' => 2]);
+        array_push($matches, ['team1_id' => $group1[1]->id, 'team2_id' => $group2[0]->id, 'role' => 2]);
+        $entries = $this->newEntities($matches);
+        $result = $this->saveMany($entries);
+
     }
 }

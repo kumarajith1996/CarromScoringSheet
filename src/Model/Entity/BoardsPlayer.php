@@ -2,7 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-
+use Cake\ORM\TableRegistry;
 /**
  * BoardsPlayer Entity
  *
@@ -28,6 +28,7 @@ class BoardsPlayer extends Entity
      *
      * @var array
      */
+    protected $_virtual = ['team_id', 'opponent_id'];
     protected $_accessible = [
         'board_id' => true,
         'player_id' => true,
@@ -37,4 +38,24 @@ class BoardsPlayer extends Entity
         'board' => true,
         'player' => true
     ];
+
+    protected function _getTeamId()
+    {
+        $id = $this->_properties['player_id'];
+        $players = TableRegistry::get('Players');
+        return $players->get($id)['team_id'];
+    }
+
+    protected function _getOpponentId()
+    {
+        $id = $this->_properties['board_id'];
+        $boards = TableRegistry::get('Boards');
+        $matchId = $boards->get($id)['match_id'];
+        $matches = TableRegistry::get('Matches');
+        $match = $matches->get($matchId);
+        if($match->team1_id == $this->team_id)
+            return $match->team2_id;
+        else
+            return $match->team1_id;
+    }
 }

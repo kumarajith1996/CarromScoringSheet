@@ -26,6 +26,7 @@ class BoardsPlayersController extends AppController
         $boardsPlayers = $this->paginate($this->BoardsPlayers);
 
         $this->set(compact('boardsPlayers'));
+        $this->set('_serialize', true);
     }
 
     /**
