@@ -12,8 +12,6 @@ use Cake\Event\Event;
  */
 class MatchesController extends AppController
 {
-
-
     /**
      * Index method
      *
@@ -36,7 +34,7 @@ class MatchesController extends AppController
      */
     public function view($id = null)
     {
-        $match = $this->Matches->get($id, ['contain' => ['Team1', 'Team2']]);
+        $match = $this->Matches->get($id);
         $this->set('match', $match);
         $this->set('_serialize', true);
     }
