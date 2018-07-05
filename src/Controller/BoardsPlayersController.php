@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\Log\Log;
 /**
  * BoardsPlayers Controller
  *
@@ -54,17 +55,13 @@ class BoardsPlayersController extends AppController
     {
         $boardsPlayer = $this->BoardsPlayers->newEntity();
         if ($this->request->is('post')) {
-            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData());
+            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boards_player'), ['validate' => false]);
             if ($this->BoardsPlayers->save($boardsPlayer)) {
-                $this->Flash->success(__('The boards player has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The boards player could not be saved. Please, try again.'));
+                Log::debug("Board_Player saved");
+            }        
         }
-        $boards = $this->BoardsPlayers->Boards->find('list', ['limit' => 200]);
-        $players = $this->BoardsPlayers->Players->find('list', ['limit' => 200]);
-        $this->set(compact('boardsPlayer', 'boards', 'players'));
+        $this->set(compact('boardsPlayer'));
+        $this->set('_serialize', true);
     }
 
     /**
@@ -111,5 +108,27 @@ class BoardsPlayersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function beforeRender(event $event) {
+        $this->setCorsHeaders();
+    }
+
+    public function beforeFilter(event $event) {
+    if ($this->request->is('options')) {
+        $this->setCorsHeaders();
+        return $this->response;
+        }
+    }
+
+    private function setCorsHeaders() {
+        $this->response->cors($this->request)
+            ->allowOrigin(['*'])
+            ->allowMethods(['*'])
+            ->allowHeaders(['*'])
+            ->allowCredentials(['true'])
+            ->exposeHeaders(['Link'])
+            ->maxAge(300)
+            ->build();
     }
 }

@@ -175,6 +175,13 @@ class MatchesTable extends Table
         array_push($matches, ['team1_id' => $group1[1]->id, 'team2_id' => $group2[0]->id, 'role' => 2]);
         $entries = $this->newEntities($matches);
         $result = $this->saveMany($entries);
+    }
+
+    public function generateFinals()
+    {
+        $finals = $this->Matches->find()->select('winner')->where(['role' => 2])->toArray();
+        $match = $this->newEntity(['team1_id' => $finals[0]->winner, 'team2_id' => $finals[0]->winner, 'role' => 3]);
+        $this->save($match);
 
     }
 }

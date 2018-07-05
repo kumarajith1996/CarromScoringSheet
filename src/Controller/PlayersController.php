@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
 /**
  * Players Controller
  *
@@ -40,11 +40,6 @@ class PlayersController extends AppController
         $players = $this->Players->getPlayerById($id);
         $this->set('players', $players);
         $this->set('_serialize', true);
-        $this->response->header('Access-Control-Allow-Origin','*');
-        $this->response->header('Access-Control-Allow-Methods','*');
-        $this->response->header('Access-Control-Allow-Headers','X-Requested-With');
-        $this->response->header('Access-Control-Allow-Headers','Content-Type, x-xsrf-token');
-        $this->response->header('Access-Control-Max-Age','172800');
     }
 
 
@@ -116,5 +111,26 @@ class PlayersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+    public function beforeRender(event $event) {
+        $this->setCorsHeaders();
+    }
+
+    public function beforeFilter(event $event) {
+    if ($this->request->is('options')) {
+        $this->setCorsHeaders();
+        return $this->response;
+        }
+    }
+
+    private function setCorsHeaders() {
+        $this->response->cors($this->request)
+            ->allowOrigin(['*'])
+            ->allowMethods(['*'])
+            ->allowHeaders(['*'])
+            ->allowCredentials(['true'])
+            ->exposeHeaders(['Link'])
+            ->maxAge(300)
+            ->build();
     }
 }
