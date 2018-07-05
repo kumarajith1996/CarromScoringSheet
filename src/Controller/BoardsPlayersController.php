@@ -58,7 +58,7 @@ class BoardsPlayersController extends AppController
             $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boards_player'), ['validate' => false]);
             if ($this->BoardsPlayers->save($boardsPlayer)) {
                 Log::debug("Board_Player saved");
-            }        
+            }
         }
         $this->set(compact('boardsPlayer'));
         $this->set('_serialize', true);
@@ -102,27 +102,5 @@ class BoardsPlayersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
-    }
-
-    public function beforeRender(event $event) {
-        $this->setCorsHeaders();
-    }
-
-    public function beforeFilter(event $event) {
-    if ($this->request->is('options')) {
-        $this->setCorsHeaders();
-        return $this->response;
-        }
-    }
-
-    private function setCorsHeaders() {
-        $this->response->cors($this->request)
-            ->allowOrigin(['*'])
-            ->allowMethods(['*'])
-            ->allowHeaders(['*'])
-            ->allowCredentials(['true'])
-            ->exposeHeaders(['Link'])
-            ->maxAge(300)
-            ->build();
     }
 }

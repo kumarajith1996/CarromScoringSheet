@@ -17,7 +17,7 @@ class MatchesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-     public function index()
+    public function index()
     {
         $filter = $this->request->getQuery('filter');
         $matches = $this->Matches->getOrGenerateMatches($filter['group'] ?? null, $filter['role'] ?? null);
@@ -103,27 +103,5 @@ class MatchesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
-    }
-
-    public function beforeRender(event $event) {
-        $this->setCorsHeaders();
-    }
-
-    public function beforeFilter(event $event) {
-    if ($this->request->is('options')) {
-        $this->setCorsHeaders();
-        return $this->response;
-        }
-    }
-
-    private function setCorsHeaders() {
-        $this->response->cors($this->request)
-            ->allowOrigin(['*'])
-            ->allowMethods(['*'])
-            ->allowHeaders(['*'])
-            ->allowCredentials(['true'])
-            ->exposeHeaders(['Link'])
-            ->maxAge(300)
-            ->build();
     }
 }

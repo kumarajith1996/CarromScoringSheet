@@ -99,25 +99,5 @@ class TeamsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-    public function beforeRender(event $event) {
-        $this->setCorsHeaders();
-    }
-
-    public function beforeFilter(event $event) {
-    if ($this->request->is('options')) {
-        $this->setCorsHeaders();
-        return $this->response;
-        }
-    }
-
-    private function setCorsHeaders() {
-        $this->response->cors($this->request)
-            ->allowOrigin(['*'])
-            ->allowMethods(['*'])
-            ->allowHeaders(['*'])
-            ->allowCredentials(['true'])
-            ->exposeHeaders(['Link'])
-            ->maxAge(300)
-            ->build();
-    }
+    
 }

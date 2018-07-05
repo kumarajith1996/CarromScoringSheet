@@ -57,6 +57,8 @@ class BoardsController extends AppController
             $board = $this->Boards->patchEntity($board, $this->request->getData('board'), ['validation' => false]);
             $this->Boards->save($board);
         }
+        $match = $this->Boards->Matches->get($board['match_id']);
+        $board->match = $match;
         $this->set(compact('board'));
         $this->set('_serialize', true);
     }
@@ -105,27 +107,5 @@ class BoardsController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
-    }
-
-    public function beforeRender(event $event) {
-        $this->setCorsHeaders();
-    }
-
-    public function beforeFilter(event $event) {
-    if ($this->request->is('options')) {
-        $this->setCorsHeaders();
-        return $this->response;
-        }
-    }
-
-    private function setCorsHeaders() {
-        $this->response->cors($this->request)
-            ->allowOrigin(['*'])
-            ->allowMethods(['*'])
-            ->allowHeaders(['*'])
-            ->allowCredentials(['true'])
-            ->exposeHeaders(['Link'])
-            ->maxAge(300)
-            ->build();
     }
 }
