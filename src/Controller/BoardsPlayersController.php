@@ -73,21 +73,15 @@ class BoardsPlayersController extends AppController
      */
     public function edit($id = null)
     {
-        $boardsPlayer = $this->BoardsPlayers->get($id, [
-            'contain' => []
-        ]);
+        $boardsPlayer = $this->BoardsPlayers->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData());
+            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boards_player'));
             if ($this->BoardsPlayers->save($boardsPlayer)) {
-                $this->Flash->success(__('The boards player has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                Log::debug('Edit successful on BoardsPlayers');
             }
-            $this->Flash->error(__('The boards player could not be saved. Please, try again.'));
         }
-        $boards = $this->BoardsPlayers->Boards->find('list', ['limit' => 200]);
-        $players = $this->BoardsPlayers->Players->find('list', ['limit' => 200]);
-        $this->set(compact('boardsPlayer', 'boards', 'players'));
+        $this->set(compact('boardsPlayer'));
+        $this->set('_serialize', true);
     }
 
     /**
