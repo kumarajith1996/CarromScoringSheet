@@ -57,8 +57,6 @@ class BoardsController extends AppController
             $board = $this->Boards->patchEntity($board, $this->request->getData('board'), ['validation' => false]);
             $this->Boards->save($board);
         }
-        $match = $this->Boards->Matches->get($board['match_id']);
-        $board->match = $match;
         $this->set(compact('board'));
         $this->set('_serialize', true);
     }

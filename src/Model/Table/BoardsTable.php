@@ -83,17 +83,17 @@ class BoardsTable extends Table
         $boards = $this->find()->where(['match_id' => $matchId]);
         $points = [];
         $match = $this->Matches->get($matchId);
-        $points[''.$match['team1_id']] = 0;
-        $points[''.$match['team2_id']] = 0;
+        $points[$match['team1_id']] = 0;
+        $points[$match['team2_id']] = 0;
         $temp = null;
         $boards_players = TableRegistry::get('BoardsPlayers');
         foreach($boards as $board)
         {
             $temp = $boards_players->computePoints($board['id'], $match['team1_id'], $match['team2_id']);
-            $points[''.$match['team1_id']] += $temp[''.$match['team1_id']];
-            $points[''.$match['team2_id']] += $temp[''.$match['team2_id']];
+            $points[$match['team1_id']] += $temp[$match['team1_id']];
+            $points[$match['team2_id']] += $temp[$match['team2_id']];
             $queenTeamId = $this->Players->get($board['queen'])['team_id'];
-            $points[''.$queenTeamId] += 5;
+            $points[$queenTeamId] += 5;
         }
         return $points;
     }

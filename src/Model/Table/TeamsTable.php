@@ -96,9 +96,8 @@ class TeamsTable extends Table
     {
         $teams = $this->find('all');
         foreach ($teams as $team) {
-            $tempTeam = $this->get($team['id']);
-            $tempTeam->_group = ($team['id']%2) + 1;
-            $this->save($tempTeam);
+            $team->_group = ($team['id']%2) + 1;
+            $this->save($team);
         }
     }
 
@@ -116,11 +115,11 @@ class TeamsTable extends Table
     public function updateTeamPoints($points, $team1Id, $team2Id)
     {
         $team = $this->get($team1Id);
-        $team['points'] = $team['points'] +  $points[''.$team1Id];
+        $team['points'] = $team['points'] +  $points[$team1Id];
         $this->save($team);
         
         $team = $this->get($team2Id);
-        $team['points'] = $team['points'] + $points[''.$team2Id];
+        $team['points'] = $team['points'] + $points[$team2Id];
         $this->save($team);
     }
 }

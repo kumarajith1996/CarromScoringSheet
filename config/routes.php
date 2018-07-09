@@ -63,7 +63,9 @@ Router::scope('/', function (RouteBuilder $routes) {
      * ...and connect the rest of 'Pages' controller's URLs.
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
-
+    $routes->connect('/BoardsPlayers', ['controller' => 'BoardsPlayers', 'action' => 'add', '_method' => 'POST']);
+    $routes->connect('/BoardsPlayers/:id', ['controller' => 'BoardsPlayers', 'action' => 'edit', '_method' => 'PATCH'])->setPass(['id']);
+    $routes->connect('/BoardsPlayers', ['controller' => 'BoardsPlayers', 'action' => 'index']);
     /**
      * Connect catchall routes for all controllers.
      *

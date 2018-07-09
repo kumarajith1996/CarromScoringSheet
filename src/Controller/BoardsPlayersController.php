@@ -55,7 +55,7 @@ class BoardsPlayersController extends AppController
     {
         $boardsPlayer = $this->BoardsPlayers->newEntity();
         if ($this->request->is('post')) {
-            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boards_player'), ['validate' => false]);
+            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boardsPlayer'), ['validate' => false]);
             if ($this->BoardsPlayers->save($boardsPlayer)) {
                 Log::debug("Board_Player saved");
             }
@@ -75,7 +75,7 @@ class BoardsPlayersController extends AppController
     {
         $boardsPlayer = $this->BoardsPlayers->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boards_player'));
+            $boardsPlayer = $this->BoardsPlayers->patchEntity($boardsPlayer, $this->request->getData('boardsPlayer'));
             if ($this->BoardsPlayers->save($boardsPlayer)) {
                 Log::debug('Edit successful on BoardsPlayers');
             }

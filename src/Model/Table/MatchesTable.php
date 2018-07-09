@@ -8,7 +8,7 @@ use Cake\Validation\Validator;
 
 /**
  * Matches Model
- *
+ *  
  * @property \App\Model\Table\TeamsTable|\Cake\ORM\Association\BelongsTo $Teams
  * @property \App\Model\Table\TeamsTable|\Cake\ORM\Association\BelongsTo $Teams
  * @property \App\Model\Table\BoardsTable|\Cake\ORM\Association\HasMany $Boards
@@ -41,6 +41,12 @@ class MatchesTable extends Table
 
         $this->belongsTo('Teams');
 
+        $this->belongsTo('Winner',[
+            'foreignKey' => 'winner',
+            'joinType' => 'INNER',
+            'className' => 'teams'
+        ]);
+        
         $this->belongsTo('Team1', [
             'foreignKey' => 'team1_id',
             'joinType' => 'INNER',
@@ -96,6 +102,7 @@ class MatchesTable extends Table
 
         return $rules;
     }
+
     public function getOrGenerateMatches($group, $role)
     {
         $count = $this->find()->count();
@@ -126,14 +133,13 @@ class MatchesTable extends Table
         $patchMatch;
         foreach ($matches as $match) {
             $points = $this->Boards->computePoints($match['id']);
-            $patchMatch = $this->get($match['id']);
-            if($points[''.$match['team1_id']] > $points[''.$match['team2_id']])
+            if($points[$match['team1_id']] > $points[$match['team2_id']])
             {
-                $patchMatch->winner = $match['team1_id'];
+                $match->winner = $match['team1_id'];
             }
-            else if($points[''.$match['team1_id']] < $points[''.$match['team2_id']])
+            else if($points[$match['team1_id']] < $points[$match['team2_id']])
             {
-                $patchMatch->winner = $match['team2_id'];
+                $match->winner = $match['team2_id'];
             }
             else
             {
