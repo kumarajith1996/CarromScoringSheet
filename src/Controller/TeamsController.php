@@ -34,11 +34,9 @@ class TeamsController extends AppController
      */
     public function view($id = null)
     {
-        $team = $this->Teams->get($id, [
-            'contain' => ['Players']
-        ]);
-
+        $team = $this->Teams->get($id);
         $this->set('team', $team);
+        $this->set('_serialize', true);
     }
 
     /**

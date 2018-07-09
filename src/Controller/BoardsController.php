@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Event\Event;
+use Cake\Log\Log;
 /**
  * Boards Controller
  *
@@ -38,11 +39,10 @@ class BoardsController extends AppController
      */
     public function view($id = null)
     {
-        $board = $this->Boards->get($id, [
-            'contain' => ['Matches', 'Players']
-        ]);
+        $board = $this->Boards->get($id);
 
         $this->set('board', $board);
+        $this->set('_serialize', true);
     }
 
     /**
@@ -74,17 +74,16 @@ class BoardsController extends AppController
             'contain' => ['Players']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $board = $this->Boards->patchEntity($board, $this->request->getData());
+            $board = $this->Boards->patchEntity($board, $this->request->getData('board'), ['validate'=>false]);
             if ($this->Boards->save($board)) {
-                $this->Flash->success(__('The board has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                Log::debug('Boards entry '.$id.' edited');
             }
-            $this->Flash->error(__('The board could not be saved. Please, try again.'));
+            else {
+                Log::debug('Edit failed on board '.$id);
+            }
         }
-        $matches = $this->Boards->Matches->find('list', ['limit' => 200]);
-        $players = $this->Boards->Players->find('list', ['limit' => 200]);
-        $this->set(compact('board', 'matches', 'players'));
+        $this->set(compact('board'));
+        $this->set('_serialize', true);
     }
 
     /**

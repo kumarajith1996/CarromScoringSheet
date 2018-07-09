@@ -64,6 +64,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
     $routes->connect('/BoardsPlayers', ['controller' => 'BoardsPlayers', 'action' => 'add', '_method' => 'POST']);
+    $routes->connect('/BoardsPlayers/:id', ['controller' => 'BoardsPlayers', 'action' => 'edit', '_method' => 'PUT'])->setPass(['id']);
     $routes->connect('/BoardsPlayers/:id', ['controller' => 'BoardsPlayers', 'action' => 'edit', '_method' => 'PATCH'])->setPass(['id']);
     $routes->connect('/BoardsPlayers', ['controller' => 'BoardsPlayers', 'action' => 'index']);
     /**

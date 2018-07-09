@@ -44,9 +44,10 @@ class MatchesTable extends Table
         $this->belongsTo('Winner',[
             'foreignKey' => 'winner',
             'joinType' => 'INNER',
-            'className' => 'teams'
+            'className' => 'teams',
+            'propertyName' =>'winner'
         ]);
-        
+
         $this->belongsTo('Team1', [
             'foreignKey' => 'team1_id',
             'joinType' => 'INNER',
@@ -126,28 +127,29 @@ class MatchesTable extends Table
         return $matches;
     }
 
-    public function computePoints()
+    public function computePoints($id)
     {
         $matches = $this->find()->all();
         $points = null;
-        $patchMatch;
-        foreach ($matches as $match) {
-            $points = $this->Boards->computePoints($match['id']);
-            if($points[$match['team1_id']] > $points[$match['team2_id']])
-            {
-                $match->winner = $match['team1_id'];
-            }
-            else if($points[$match['team1_id']] < $points[$match['team2_id']])
-            {
-                $match->winner = $match['team2_id'];
-            }
-            else
-            {
-                $patchMatch->winner = null;
-            }
-            $this->save($patchMatch);
-            $this->Teams->updateTeamPoints($points, $match['team1_id'], $match['team2_id']);
+        $match = $this->get($id);
+        $points = $this->Boards->computePoints($match['id']);
+        if($points[$match['team1_id']] > $points[$match['team2_id']])
+        {
+            $match->winner = $match['team1_id'];
         }
+        else if($points[$match['team1_id']] < $points[$match['team2_id']])
+        {
+            $match->winner = $match['team2_id'];
+        }
+        else
+        {
+            $match->winner = null;
+        }
+        $this->save($match);
+        $this->Teams->updateTeamPoints($points, $match['team1_id'], $match['team2_id']);
+        $match->team1_points = $points[$match['team1_id']];
+        $match->team2_points = $points[$match['team2_id']];
+        return $match;
     }
 
     public function generatePlayOffs()

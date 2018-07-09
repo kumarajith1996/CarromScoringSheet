@@ -29,6 +29,7 @@ class Match extends Entity
      *
      * @var array
      */
+    protected $_virtual = ['team1_points', 'team2_points'];
     protected $_accessible = [
         'team1_id' => true,
         'team2_id' => true,

@@ -34,7 +34,7 @@ class MatchesController extends AppController
      */
     public function view($id = null)
     {
-        $match = $this->Matches->get($id);
+        $match = $this->Matches->computePoints($id);
         $this->set('match', $match);
         $this->set('_serialize', true);
     }
