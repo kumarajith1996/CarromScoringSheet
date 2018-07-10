@@ -52,6 +52,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->resources('Boards');
     $routes->resources('Matches');
     $routes->resources('BoardsPlayers');
+    $routes->resources('Statistics');
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
      * its action called 'display', and we pass a param to select the view file
@@ -67,6 +68,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/BoardsPlayers/:id', ['controller' => 'BoardsPlayers', 'action' => 'edit', '_method' => 'PUT'])->setPass(['id']);
     $routes->connect('/BoardsPlayers/:id', ['controller' => 'BoardsPlayers', 'action' => 'edit', '_method' => 'PATCH'])->setPass(['id']);
     $routes->connect('/BoardsPlayers', ['controller' => 'BoardsPlayers', 'action' => 'index']);
+    $routes->connect('/players/statistics/', ['controller' => 'Players', 'action' => 'getStatistics']);
     /**
      * Connect catchall routes for all controllers.
      *
